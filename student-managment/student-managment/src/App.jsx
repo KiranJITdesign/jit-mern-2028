@@ -1,9 +1,18 @@
-import Welcom from "./components/Welcom";
+import Navbar from "./components/Navbar";
+import Welcome from "./components/Welcome";
+import Dashbord from "./components/Dashbord";
+import './App.css';
 function App() {
   return (
-    <div> 
-      <Welcom />
+    <div>
+      
+      <Navbar />
+      <Welcome/>
+      <Dashbord/>
     </div>
-  )
+  
+
+  );
 }
+
 export default App;
