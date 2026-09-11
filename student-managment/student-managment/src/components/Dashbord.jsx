@@ -1,53 +1,62 @@
 import StatCard from "./StatCard";
 import TaskCard from "./TaskCard";
-import { useState } from "react";
 import AddTask from "./AddTask";
 
-function Dashboard() {
-    const[tasks, setTasks] = useState([
-        { id : 1, title :"Learn DSA" , value :"Basics of DSA" ,status :"Pending"},
-        { id : 2, title :"Learn react" , value :"Learn React fundamentals", status :"Completed"},
-        { id : 3, title :"Build a project" , value :"Build a simple React project" ,status :"Pending"},
-        { id : 4, title :"Learn Django" , value :"Build a simple Django project" ,status :"Pending"}
-    ]);
+function Dashboard({ tasks, setTasks }) {
+    const totalTasks = tasks.length;
+    const completedTasks = tasks.filter((task) => task.status === "Completed").length;
+    const pendingTasks = totalTasks - completedTasks;
 
-    function toggleTask(id){
-        setTasks(
-            tasks.map((tasks) => {
-                if(tasks.id === id){
-                    return {...tasks, 
-                        status: tasks.status === "Completed" ? "Pending" : "Completed"
-                    };
-                }
-                return tasks;
-            })
+    function toggleTask(id) {
+        setTasks((prevTasks) =>
+            prevTasks.map((task) =>
+                task.id === id
+                    ? { ...task, status: task.status === "Completed" ? "Pending" : "Completed" }
+                    : task
+            )
         );
+    }
 
+    function deleteTask(id) {
+        setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
     }
 
     function addTask(newTask) {
-        setTasks([...tasks, newTask]);
+        setTasks((prevTasks) => [
+            ...prevTasks,
+            {
+                ...newTask,
+                value: newTask.value || newTask.description,
+                status: newTask.status || "Pending"
+            }
+        ]);
     }
+
     return (
         <main className="Dashboard">
             <header className="dashboard-header"></header>
 
             <div className="stats-grid">
-                <StatCard title = {"total tasks"}  value ={"10"}/>
-                <StatCard title = {"completed tasks"} value ={"7"}/>
-                <StatCard title = {"pending tasks"} value ={"3"}/>
+                <StatCard title={"total tasks"} value={String(totalTasks)} />
+                <StatCard title={"completed tasks"} value={String(completedTasks)} />
+                <StatCard title={"pending tasks"} value={String(pendingTasks)} />
             </div>
 
             <section className="task-section">
-            <AddTask onAddTask={addTask}/>
-            
+                <AddTask onAddTask={addTask} />
 
                 <h2>Recent Tasks</h2>
                 <div className="task-list">
-                    {tasks.map(tasks => (
-                        <TaskCard key={tasks.id} title={tasks.title} value={tasks.value} status={tasks.status} 
-                        onToggle={()=>toggleTask(tasks.id)}/>
-                        
+                    {tasks.map((task) => (
+                        <TaskCard
+                            key={task.id}
+                            id={task.id}
+                            title={task.title}
+                            value={task.value}
+                            status={task.status}
+                            onToggle={() => toggleTask(task.id)}
+                            onDelete={() => deleteTask(task.id)}
+                        />
                     ))}
                 </div>
             </section>
